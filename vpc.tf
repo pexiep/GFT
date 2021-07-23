@@ -1,15 +1,21 @@
-resource "aws_vpc" "prod" {
-  cidr_block       = "10.0.0.0/16"
-
-  tags = {
-    Name = "prod"
-  }
+variable "region" {
+  default     = "us-east-2"
+  description = "AWS region"
 }
 
-resource "aws_vpc" "dev" {
-  cidr_block       = "172.16.0.0/16"
+provider "aws" {
+  region = "us-east-2"
+}
 
-  tags = {
-    Name = "dev"
-  }
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "2.66.0"
+
+  name                 = "lab-vpc"
+  cidr                 = "10.0.0.0/16"
+  azs                  = ["eu-west-1a", "eu-west-1b"]
+  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24"]
+  enable_nat_gateway   = true
+  enable_vpn_gateway   = true
 }
